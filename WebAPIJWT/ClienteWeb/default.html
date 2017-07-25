@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+
+    <h3>Teste API</h3>
+
+    <h2>Registrar novo usuário</h2>
+    <form id="userData">
+        <input type="text" name="email" placeholder="Name" />
+        <input type="password" name="senha" placeholder="Password" />
+        <input type="password" name="confirmasenha" placeholder="Password" />
+        <input type="submit" id="register" value="Register" />
+    </form>
+
+    <h2>Login</h2>
+    <form id="userLogin">
+        <input type="text" name="email" placeholder="Name" />
+        <input type="password" name="password" placeholder="Password" />
+        <input type="submit" id="login" value="Login" />
+    </form>
+
+    <h2>Listar Filmes</h2>
+    <button id="getFilms">Get Films</button>
+
+    <h2>Retorno</h2>
+    <pre id="output">
+    </pre>
+
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script>
+
+        $(function () {
+
+            var getFilms = function () {
+                console.log(accessToken);
+                var url = "http://localhost:50886/api/v1/listafilmes/";
+                $.ajax(url, {
+                    type: "GET",
+                    headers: getHeaders()
+                }).always(showResponse);
+                return false;
+            };
+
+
+            var getHeaders = function () {
+                if (accessToken) {
+                    return { "Authorization": "Bearer " + accessToken };
+                }
+            };
+
+            var showResponse = function (object) {
+
+                $("#output").text(JSON.stringify(object, null, 4));
+
+            };
+
+            var register = function () {
+                var url = "http://localhost:50886/api/v1/criar/";
+                var data = $("#userData").serialize();
+                $.post(url, data).always(showResponse);
+                return false;
+            };
+
+            var saveAccessToken = function (data) {
+                accessToken = data.token;
+            };
+
+            var login = function () {
+                var url = "http://localhost:50886/api/v1/login/";
+                var data = $("#userLogin").serialize();
+                //data = data + "&grant_type=password";
+                $.post(url, data)
+                 .success(saveAccessToken)
+                 .always(showResponse);
+
+
+                return false;
+            };
+
+            var accessToken = "";
+
+            $("#login").click(login);
+            $("#register").click(register);
+            $("#getFilms").click(getFilms);
+
+        });
+
+    </script>
+
+</body>
+</html>
